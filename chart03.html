@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['County', 'Dividends', 'Migration'],
+          ['Dallas',  1082997,      11765496],
+          ['New York',  2881588,      9671467],
+          ['San Francisco',  998915,     16640041],
+          ['Los Angeles',  4569228,      16648741],
+	 
+        ]);
+// ['Jefferson',  1030,      540]
+        var options = {
+          title: 'Dividends - Migration',
+          hAxis: {title: 'County', titleTextStyle: {color: 'blue'}}
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+	<h2>Analysis with charts - Migration and dividends</h2><br>
+    <div id="chart_div" style="width: 900px; height: 500px;"></div>
+  </body>
+</html>

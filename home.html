@@ -1,0 +1,405 @@
+<!Doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html >
+	<head>
+    	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+
+  	<!--  [*]  set html page title   -->
+  	
+	<title>Migration - Income Stats</title>
+
+  	<!--  css style sheet -->
+  	
+	<style type="text/css">
+      		img { border: 0; }
+      		.menuimg{
+			height:32px;
+  			width:32px;
+  			position:relative;
+  			top:0px;
+  			border:0px;
+	  	}
+		table.pretty {
+	  		border-collapse: separate;
+	  		border-spacing: 0.2em;
+		}
+		table.pretty th, table.pretty td {
+	  		background: whitesmoke;
+	  		border: 1px silver solid;
+	  		padding: 0.2em;
+		}
+		#menu td { width: 160px; padding: 5px; border: solid black 1px; text-align: center; }
+		#menu table { border-collapse: collapse; border: solid black 1px;}
+		
+	 </style>
+
+
+
+  	<!--   import Google visualization  API -->
+  	<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+
+  	<!--   customize function -->
+  	<script type="text/javascript">
+  		google.load("visualization", "1", {packages:["geomap","table","corechart"]});
+
+		// set callback function for drawing visualizations
+		google.setOnLoadCallback(drawMap);
+
+
+		
+
+		function drawMap() 
+		{ 
+			var queryurl ="http://logd.tw.rpi.edu/sparql.php?query-option=text&query=SELECT+distinct+%3Fstate_abbv+%28SUM%28xsd%3Adecimal%28%3Fagi%29%29+AS+%3FA%29+%3Fstate_fipscode+%0D%0AWHERE+%7B%0D%0A+GRAPH++%3Chttp%3A%2F%2Flogd.tw.rpi.edu%2Fsource%2Fdata-gov%2Fdataset%2F1356%2Fversion%2F2009-Dec-03%3E%7B%0D%0A%0D%0A+++%3Fs1++%3Chttp%3A%2F%2Flogd.tw.rpi.edu%2Fsource%2Fdata-gov%2Fdataset%2F1356%2Fvocab%2Fraw%2Fagi%3E+%3Fagi.+++++%0D%0A+++%3Fs1++%3Chttp%3A%2F%2Flogd.tw.rpi.edu%2Fsource%2Fdata-gov%2Fdataset%2F1356%2Fvocab%2Fraw%2Fstate_abbrv%3E+%3Fstate_abbv+.%0D%0A++++++%3Fs1++%3Chttp%3A%2F%2Flogd.tw.rpi.edu%2Fsource%2Fdata-gov%2Fdataset%2F1356%2Fvocab%2Fraw%2Fstate_code%3E+%3Fstate_fipscode+.%0D%0A+%7D%0D%0A%0D%0A%7D%0D%0Agroup+BY+%3Fstate_abbv+%3Fstate_fipscode%0D%0Aorder+by+%3Fstate_abbv&service-uri=&output=gvds&callback=&tqx=&tp=";
+			var query = new google.visualization.Query(queryurl);
+
+        		query.send(handleQueryResponse);
+		};  
+		
+		//global variables
+		var geomap;
+		var mytable;
+		var returnInflowStatewise=0;
+		function drawMap2() 
+		{
+		var queryurl ="http://logd.tw.rpi.edu/sparql.php?query-option=text&query=SELECT+distinct+%3Fstate+SUM%28xsd%3Adecimal%28%3Freturn%29+AS+%3Freturn_num%29%0D%0AWHERE+%7B%0D%0AGRAPH+%3Chttp%3A%2F%2Flogd.tw.rpi.edu%2Fsource%2Fdata-gov%2Fdataset%2F1146%2Fversion%2F1st-anniversary%3E+%7B%0D%0A+++%3Fs2+%3Chttp%3A%2F%2Flogd.tw.rpi.edu%2Fsource%2Fdata-gov%2Fdataset%2F1146%2Fvocab%2Fraw%2Fstate_abbrv%3E+%3Fstate.%0D%0A+++%3Fs2+%3Chttp%3A%2F%2Flogd.tw.rpi.edu%2Fsource%2Fdata-gov%2Fdataset%2F1146%2Fvocab%2Fraw%2Fcounty_name%3E+%3Fcounty.%0D%0A+++%3Fs2+%3Chttp%3A%2F%2Flogd.tw.rpi.edu%2Fsource%2Fdata-gov%2Fdataset%2F1146%2Fvocab%2Fraw%2Freturn_num%3E+%3Freturn.%0D%0A+%7D%0D%0A%7D%0D%0Agroup+by+%3Fstate%0D%0Aorder+by+%3Fstate%0D%0A&service-uri=&output=gvds&callback=&tqx=&tp=";
+		var query = new google.visualization.Query(queryurl);
+
+        		query.send(handleQueryResponse2);
+		}; 
+
+		function drawMapSearchStateWise() 
+		{ 
+			var queryurl ="http://logd.tw.rpi.edu/sparql.php?query-option=text&query=SELECT+distinct+%3Fstate_abbv+%28SUM%28xsd%3Adecimal%28%3Fagi%29%29+AS+%3FA%29+%3Fstate_fipscode+%0D%0AWHERE+%7B%0D%0A+GRAPH++%3Chttp%3A%2F%2Flogd.tw.rpi.edu%2Fsource%2Fdata-gov%2Fdataset%2F1356%2Fversion%2F2009-Dec-03%3E%7B%0D%0A%0D%0A+++%3Fs1++%3Chttp%3A%2F%2Flogd.tw.rpi.edu%2Fsource%2Fdata-gov%2Fdataset%2F1356%2Fvocab%2Fraw%2Fagi%3E+%3Fagi.+++++%0D%0A+++%3Fs1++%3Chttp%3A%2F%2Flogd.tw.rpi.edu%2Fsource%2Fdata-gov%2Fdataset%2F1356%2Fvocab%2Fraw%2Fstate_abbrv%3E+%3Fstate_abbv+.%0D%0A++++++%3Fs1++%3Chttp%3A%2F%2Flogd.tw.rpi.edu%2Fsource%2Fdata-gov%2Fdataset%2F1356%2Fvocab%2Fraw%2Fstate_code%3E+%3Fstate_fipscode+.%0D%0A+%7D%0D%0A%0D%0A%7D%0D%0Agroup+BY+%3Fstate_abbv+%3Fstate_fipscode%0D%0Aorder+by+%3Fstate_abbv&service-uri=&output=gvds&callback=&tqx=&tp=";
+			var query = new google.visualization.Query(queryurl);
+
+        		query.send(handleQueryResponseSearchStateWise);
+		};  
+		
+		///////////////////////////////
+		// Function handleQueryResponse
+		// Checks for query errors, then processes
+		///////////////////////////////      
+		
+		function handleQueryResponse(response) 
+		{
+			
+				// Check for query response errors.
+	       		if (response.isError()) 
+				{
+          		alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+	       		return;
+       			}
+
+				data = response.getDataTable();
+
+				// Make sure our data isn't empty.
+        		if (null==data) 
+        			return;
+
+
+				// draw avereaged map
+	      		var newdata = new google.visualization.DataTable();
+	      		newdata.addColumn('string', 'State');
+	      		newdata.addColumn('number', 'AGI');
+	      		//newdata.addColumn('number', 'Code');
+
+			var rows = data.getNumberOfRows();
+			//alert("b4 loop");
+			for (var i = 0; i < rows; i++ )
+			{
+				var v1 = "US-"+data.getValue(i, 0);
+				var v2=data.getValue(i,1);
+				//alert(v1+" - "+v2);
+				//var v3=data.getValue(i,2);
+				newdata.addRow([v1,v2]);
+			}
+
+
+			{
+				var options = {};
+				options['region'] = 'US';
+				options['dataMode'] = 'regions';
+				options['width'] = 730;
+				options['height'] = 500;
+				options['colors'] = [0xEEEEFF, 0x3030FF];
+				// Create container and draw visualization
+				geomap = new google.visualization.GeoMap(document.getElementById('visualization_GeoMap'));
+       	    	geomap.draw(newdata, options);	
+			}
+
+			// draw table
+		        var newdata = new google.visualization.DataTable();
+	      		newdata.addColumn('string', 'State');
+	      		newdata.addColumn('number', 'AGI');
+	      		newdata.addColumn('number', 'Code');
+				var rows = data.getNumberOfRows();
+				for (var i = 0; i < rows; i++ )
+				{
+				/*
+					var v = data.getValue(i, 0);
+					newdata.addRow([v, data.getValue(i, 1),data.getValue(i, 3
+					*/
+					var v1 = data.getValue(i, 0);
+					var v2=data.getValue(i,1);
+					var v3=data.getValue(i,2);
+					newdata.addRow([v1,v2,v3]);
+				}
+
+
+				{
+     				var options = {};
+	     			options['width'] = "100%";
+					options['sortColumn'] =0;
+				// Create container and draw visualization
+	      		mytable= new google.visualization.Table(document.getElementById('visualization_Table'));
+       	    	mytable.draw(newdata, options);	
+				}
+			google.visualization.events.addListener(geomap , 'select', function(){ 
+			mytable.setSelection(geomap.getSelection());
+		});				
+
+
+	
+	};
+	function handleQueryResponseSearchStateWise(response) 
+		{
+			//alert("in func");
+				// Check for query response errors.
+	       		if (response.isError()) 
+				{
+          		alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+	       		return;
+       			}
+
+				data = response.getDataTable();
+
+				// Make sure our data isn't empty.
+        		if (null==data) 
+        			return;
+
+
+				// draw avereaged map
+	      		var newdata = new google.visualization.DataTable();
+	      		newdata.addColumn('string', 'State');
+	      		newdata.addColumn('number', 'AGI');
+	      		//newdata.addColumn('number', 'Code');
+
+			var rows = data.getNumberOfRows();
+			//alert("b4 loop");
+			for (var i = 0; i < rows; i++ )
+			{
+				var v1 = "US-"+data.getValue(i, 0);
+				var v2=data.getValue(i,1);
+				//alert(v1+" - "+v2);
+				//var v3=data.getValue(i,2);
+				if(v1=="US-"+document.getElementById('txtstatesearch').value)
+				{
+					//alert(document.getElementById('txtstatesearch').value + v2);
+					newdata.addRow([v1,v2]);
+				}
+			}
+
+
+			{
+				var options = {};
+				options['region'] = 'US';
+				options['dataMode'] = 'regions';
+				options['width'] = 730;
+				options['height'] = 500;
+				options['colors'] = [0xEEEEFF, 0x3030FF];
+				// Create container and draw visualization
+				geomap = new google.visualization.GeoMap(document.getElementById('visualization_GeoMap'));
+       	    	geomap.draw(newdata, options);	
+			}
+
+			
+				for (var i = 0; i < rows; i++ )
+				{
+				/*
+					var v = data.getValue(i, 0);
+					newdata.addRow([v, data.getValue(i, 1),data.getValue(i, 3
+					*/
+					var v1 = data.getValue(i, 0);
+					var v2=data.getValue(i,1);
+					//var v3=data.getValue(i,2);
+					
+					if(v1==document.getElementById('txtstatesearch').value)
+					{
+					//v3=getStateInflow();
+					getStateInflow();
+					
+					v3=returnInflowStatewise; //its a global variable which got initialized by getStateInflow method
+					document.getElementById('visualization_Table').innerHTML="<h3><u><b>RESULTS</b></u></h3><br><b>State :</b>"+ v1+"<br><br><b>AGI :</b>"+v2+"<br><br><b>Inflow :</b>";
+					
+					newdata.addRow([v1,v2,v3]);
+					break;
+					}
+				}			
+
+};
+	function getStateInflow()
+	{
+		var queryurl ="http://logd.tw.rpi.edu/sparql.php?query-option=text&query=SELECT+distinct+%3Fstate+SUM%28xsd%3Adecimal%28%3Freturn%29+AS+%3Freturn_num%29%0D%0AWHERE+%7B%0D%0AGRAPH+%3Chttp%3A%2F%2Flogd.tw.rpi.edu%2Fsource%2Fdata-gov%2Fdataset%2F1146%2Fversion%2F1st-anniversary%3E+%7B%0D%0A+++%3Fs2+%3Chttp%3A%2F%2Flogd.tw.rpi.edu%2Fsource%2Fdata-gov%2Fdataset%2F1146%2Fvocab%2Fraw%2Fstate_abbrv%3E+%3Fstate.%0D%0A+++%3Fs2+%3Chttp%3A%2F%2Flogd.tw.rpi.edu%2Fsource%2Fdata-gov%2Fdataset%2F1146%2Fvocab%2Fraw%2Fcounty_name%3E+%3Fcounty.%0D%0A+++%3Fs2+%3Chttp%3A%2F%2Flogd.tw.rpi.edu%2Fsource%2Fdata-gov%2Fdataset%2F1146%2Fvocab%2Fraw%2Freturn_num%3E+%3Freturn.%0D%0A+%7D%0D%0A%7D%0D%0Agroup+by+%3Fstate%0D%0Aorder+by+%3Fstate%0D%0A&service-uri=&output=gvds&callback=&tqx=&tp=";
+			var query = new google.visualization.Query(queryurl);
+
+        	query.send(handleQueryResponseGetStateInflow);
+			//alert("in getstateinfloe "+returnval);
+			//return returnval;
+	};
+	
+
+	function handleQueryResponseGetStateInflow(response)
+	{
+		// Check for query response errors.
+	       		if (response.isError()) 
+				{
+          		alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+	       		return;
+       			}
+
+				data = response.getDataTable();
+
+				// Make sure our data isn't empty.
+        		if (null==data) 
+        			return;
+				var rows = data.getNumberOfRows();
+				for (var i = 0; i < rows; i++ )
+				{
+				/*
+					var v = data.getValue(i, 0);
+					newdata.addRow([v, data.getValue(i, 1),data.getValue(i, 3
+					*/
+					var v1 = data.getValue(i, 0);
+					var v2=data.getValue(i,1);
+					//var v3=data.getValue(i,2);
+					//alert("v1 is "+v1);
+					if(v1==document.getElementById('txtstatesearch').value)
+						{
+						returnInflowStatewise=v2;
+						//alert("v1 is "+v1+"and return val is "+returnInflowStatewise);
+						break;
+						}
+				}
+				//alert("returnrd val "+returnInflowStatewise);
+				document.getElementById('visualization_Table').innerHTML=document.getElementById('visualization_Table').innerHTML+returnInflowStatewise;
+				//return returnInflowStatewise;
+	};
+		function handleQueryResponse2(response) 
+		{
+			
+				// Check for query response errors.
+	       		if (response.isError()) 
+				{
+          		alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+	       		return;
+       			}
+
+				data = response.getDataTable();
+
+				// Make sure our data isn't empty.
+        		if (null==data) 
+        			return;
+
+
+				// draw avereaged map
+	      		var newdata = new google.visualization.DataTable();
+	      		newdata.addColumn('string', 'State');
+	      		newdata.addColumn('number', 'Return Num');
+	      		//newdata.addColumn('number', 'Code');
+
+			var rows = data.getNumberOfRows();
+			//alert("b4 loop");
+			for (var i = 0; i < rows; i++ )
+			{
+				var v1 = "US-"+data.getValue(i, 0);
+				var v2=data.getValue(i,1);
+				//alert(v1+" - "+v2);
+				//var v3=data.getValue(i,2);
+				newdata.addRow([v1,v2]);
+			}
+
+
+			{
+				var options = {};
+				options['region'] = 'US';
+				options['dataMode'] = 'regions';
+				options['width'] = 730;
+				options['height'] = 500;
+				options['colors'] = [0xEEEEFF, 0x3030FF];
+				// Create container and draw visualization
+				geomap = new google.visualization.GeoMap(document.getElementById('visualization_GeoMap'));
+       	    	geomap.draw(newdata, options);	
+			}
+
+			// draw table
+		        var newdata = new google.visualization.DataTable();
+	      		newdata.addColumn('string', 'State');
+	      		newdata.addColumn('number', 'Return Num');
+	      		//newdata.addColumn('number', 'Code');
+				var rows = data.getNumberOfRows();
+				for (var i = 0; i < rows; i++ )
+				{
+				/*
+					var v = data.getValue(i, 0);
+					newdata.addRow([v, data.getValue(i, 1),data.getValue(i, 3
+					*/
+					var v1 = data.getValue(i, 0);
+					var v2=data.getValue(i,1);
+					//var v3=data.getValue(i,2);
+					newdata.addRow([v1,v2]);
+				}
+
+
+				{
+     				var options = {};
+	     			options['width'] = "100%";
+					options['sortColumn'] =0;
+				// Create container and draw visualization
+	      		mytable= new google.visualization.Table(document.getElementById('visualization_Table'));
+       	    	mytable.draw(newdata, options);	
+				}
+			google.visualization.events.addListener(geomap , 'select', function(){ 
+			mytable.setSelection(geomap.getSelection());
+		});				
+
+
+	
+	};
+
+		
+
+	</script>
+
+	</head>
+
+	<body bgcolor="white"> <center>
+
+
+
+
+
+<!-- Demo Header -->
+<center>
+<div id="main" style="height:580px;width:1200px">
+<div id="header" style="height:105px;background-color:993;color:white;">
+<center><h1><br>Representation of County/State based migration inflow based on income statistics</h1></center>
+</div>
+<div id="content" style="display:inline-content;height:580px">
+	<div id="navbar" style="height:580px;background-color:#dddddd;float:left;width:200px;">
+	<br>
+		<a href="#" onclick="drawMap2()">State Wise Migration Inflow</a><br><br>		
+		<a href="#" onclick="drawMap()">State Wise Gross Income</a><br><br>
+		<a href="chart02.html"> Data chart -1 </a><br><br>
+		<a href="chart03.html"> Data chart -2</a><br><br>
+		Enter State Abbv:<br><input type="text" id="txtstatesearch"></input>
+		<input type="button" id="btnstatesearch" value = "Search" onclick="drawMapSearchStateWise()"></input>
+	</div>
+<!-- Demo Content -->		
+	<div id="visualization_GeoMap" style="height:580px;float:left;width:750px"><p><img src="http://data-gov.tw.rpi.edu/images/ajax-loader.gif" alt="loading ..."></p></div>	
+	<div id="visualization_Table" style="height:580px;float:left;width:250px"></div>
+</div>		
+<!-- Demo Description -->		
+</div>
+<center>
+</body>
+</html>
